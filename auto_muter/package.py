@@ -4,14 +4,17 @@ import zipfile
 import toml
 import argparse
 import os
-import random
-import string
+# import random
+# import string
+from auto_muter.logger import setup_logger
 
 HERE = Path(__file__).parent.parent.absolute()
 path_to_main = str(HERE / "auto_muter" / "main.py")
 
-def generate_key():
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
+logger = setup_logger()
+
+# def generate_key():
+#     return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
 def install():
     cmd = [
@@ -33,7 +36,7 @@ def install():
     #     print(f"Using encryption key: {encryption_key}")
 
     PyInstaller.__main__.run(cmd)
-    print("Build completed successfully!")
+    logger.info("Build completed successfully!")
 
 def get_version():
     pyproject = toml.load(HERE / "pyproject.toml")
@@ -67,14 +70,14 @@ def package_exe():
     if exe_path.exists():
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
             zipf.write(exe_path, arcname="AutoMuter.exe")
-        print(f"Packaged: {zip_path}")
+        logger.info(f"Packaged: {zip_path}")
 
         if args.github and os.environ.get('GITHUB_ACTIONS') == 'true':
             with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
                 f.write(f"package_path={zip_path}\n")
                 f.write(f"version={version}\n")
     else:
-        print(f"Executable not found at {exe_path}!")
+        logger.error(f"Executable not found at {exe_path}!")
         exit(1)
 
     return zip_path

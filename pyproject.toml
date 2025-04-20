@@ -21,7 +21,6 @@ dependencies = [
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-
 [tool.poetry.scripts]
 build = "auto_muter.package:install"
 build_and_package = "auto_muter.package:build_and_package"
@@ -31,5 +30,5 @@ auto-muter = "auto_muter.main:main"
 version_variable = "pyproject.toml:project.version"
 branch = "main"
 upload_to_pypi = false
-upload_to_release = true
+upload_to_release = false
 build_command = "poetry build"
