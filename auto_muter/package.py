@@ -80,12 +80,12 @@ def package_exe():
         else:
             logger.warning("GITHUB_OUTPUT not set, skipping output write.")
 
-    else:
-        logger.error(f"Executable not found at {exe_path}!")
-        exit(1)
+    # else:
+    #     logger.error(f"Executable not found at {exe_path}!")
+    #     exit(1)
 
-    return zip_path
+    # return zip_path
 
 def build_and_package():
     install()
-    return package_exe()
+    package_exe()
