@@ -1,0 +1,68 @@
+name: Build and Release AutoMuter
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: windows-latest
+    concurrency: release
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - name: Install Poetry
+        run: |
+          pip install poetry
+          poetry config virtualenvs.create false
+
+      - name: Install dependencies
+        run: |
+          poetry install
+          pip install python-semantic-release
+
+      - name: Python Semantic Release
+        id: semantic-release
+        run: |
+          semantic-release version
+          semantic-release publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get current version
+        id: get_version
+        run: |
+          $version = poetry version -s
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+          echo "Current version: $version"
+
+      - name: Build executable
+        run: poetry run build --use-key
+
+      - name: Package executable
+        run: poetry run package --github --path "."
+
+      - name: Upload artifact to release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ env.VERSION }}
+          files: AutoMuter-v${{ env.VERSION }}.zip
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
