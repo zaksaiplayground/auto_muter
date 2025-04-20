@@ -1,7 +1,15 @@
 # CHANGELOG
 
 
+## v0.1.4 (2025-04-20)
+
+
 ## v0.1.3 (2025-04-20)
+
+### Bug Fixes
+
+- Fix packaging
+  ([`ff3e25b`](https://github.com/zaksaiplayground/auto_muter/commit/ff3e25bba01bae77ca6a235b353b5f65cdee996a))
 
 
 ## v0.1.2 (2025-04-20)
