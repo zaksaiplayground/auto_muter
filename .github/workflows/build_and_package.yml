@@ -56,13 +56,10 @@ jobs:
         run: poetry run build --use-key
 
       - name: Package executable
-        run: poetry run package --github --path "."
+        run: poetry run package --github
 
       - name: Upload artifact to release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ env.VERSION }}
           files: AutoMuter-v${{ env.VERSION }}.zip
-          fail_on_unmatched_files: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
