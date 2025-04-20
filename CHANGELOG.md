@@ -18,8 +18,20 @@
 - Add github workflow
   ([`e739b43`](https://github.com/zaksaiplayground/auto_muter/commit/e739b4370eede3b97ca874f63397efcd1ce793e0))
 
+- Add python-semantic-release
+  ([`a52aaeb`](https://github.com/zaksaiplayground/auto_muter/commit/a52aaeb8fbc2f1cd9a82c69732c7ae7dc1a779dc))
+
+- Remove encryption key
+  ([`868e9e5`](https://github.com/zaksaiplayground/auto_muter/commit/868e9e5dd4137400a022c897c18a0fd2e4b421bd))
+
+- Update github actions
+  ([`1e772bd`](https://github.com/zaksaiplayground/auto_muter/commit/1e772bdcb2ea1bd394f6d28179d2050c309fdc43))
+
 - Update poetry
   ([`fbe73ce`](https://github.com/zaksaiplayground/auto_muter/commit/fbe73ce388d960d7a2882b7ebc6ccd116e1e51e1))
+
+- Use github releases
+  ([`4ddc51b`](https://github.com/zaksaiplayground/auto_muter/commit/4ddc51b8a2b76e2d12e1523047c4f6a4b03190a4))
 
 ### Documentation
 
