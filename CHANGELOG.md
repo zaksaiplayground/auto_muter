@@ -1,7 +1,15 @@
 # CHANGELOG
 
 
+## v0.1.2 (2025-04-20)
+
+
 ## v0.1.1 (2025-04-20)
+
+### Bug Fixes
+
+- Fix package.py
+  ([`c022b51`](https://github.com/zaksaiplayground/auto_muter/commit/c022b51116d378ffa0d26c189a978599e75b4f92))
 
 
 ## v0.1.0 (2025-04-20)
