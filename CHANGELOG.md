@@ -1,12 +1,18 @@
 # CHANGELOG
 
 
+## v0.1.1 (2025-04-20)
+
+
 ## v0.1.0 (2025-04-20)
 
 ### Bug Fixes
 
 - Remove unnecessary files
   ([`bb602ea`](https://github.com/zaksaiplayground/auto_muter/commit/bb602eabcd289646fb58b7dc424a29892f86ecff))
+
+- Semantic-release
+  ([`1c38386`](https://github.com/zaksaiplayground/auto_muter/commit/1c3838699826d544bfe0786594eb259ef56ac30d))
 
 ### Chores
 
