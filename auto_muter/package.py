@@ -52,7 +52,7 @@ def package_exe():
     )
     parser.add_argument('--use-key', action='store_true', help="Use encryption key with PyInstaller")
     parser.add_argument('--build', action='store_true', help="Build before packaging")
-    parser.add_argument('--github', action='store_true', help="Set outputs for GitHub Actions")
+    # parser.add_argument('--github', action='store_true', help="Set outputs for GitHub Actions")
     args = parser.parse_args()
 
     if args.build:
@@ -72,7 +72,7 @@ def package_exe():
             zipf.write(exe_path, arcname="AutoMuter.exe")
         logger.info(f"Packaged: {zip_path}")
 
-        if args.github and os.environ.get('GITHUB_ACTIONS') == 'true':
+        if os.environ.get('GITHUB_ACTIONS') == 'true':
             with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
                 f.write(f"package_path={zip_path}\n")
                 f.write(f"version={version}\n")
