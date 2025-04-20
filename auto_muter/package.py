@@ -72,10 +72,13 @@ def package_exe():
             zipf.write(exe_path, arcname="AutoMuter.exe")
         logger.info(f"Packaged: {zip_path}")
 
-        if os.environ.get('GITHUB_ACTIONS') == 'true':
-            with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-                f.write(f"package_path={zip_path}\n")
-                f.write(f"version={version}\n")
+        try:
+            if os.environ.get('GITHUB_ACTIONS') == 'true':
+                with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                    f.write(f"package_path={zip_path}\n")
+                    f.write(f"version={version}\n")
+        except Exception as ex:
+            logger.error(f"Error while writing: {ex}")
     else:
         logger.error(f"Executable not found at {exe_path}!")
         exit(1)
