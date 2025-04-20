@@ -13,7 +13,7 @@ path_to_main = str(HERE / "auto_muter" / "main.py")
 def generate_key():
     return ''.join(random.choices(string.ascii_letters + string.digits, k=16))
 
-def install(use_key=False):
+def install():
     cmd = [
         path_to_main,
         '--noconfirm',
@@ -27,10 +27,10 @@ def install(use_key=False):
         '--specpath=build',
     ]
 
-    if use_key:
-        encryption_key = generate_key()
-        cmd.append(f'--key={encryption_key}')
-        print(f"Using encryption key: {encryption_key}")
+    # if use_key:
+    #     encryption_key = generate_key()
+    #     cmd.append(f'--key={encryption_key}')
+    #     print(f"Using encryption key: {encryption_key}")
 
     PyInstaller.__main__.run(cmd)
     print("Build completed successfully!")
@@ -53,7 +53,7 @@ def package_exe():
     args = parser.parse_args()
 
     if args.build:
-        install(use_key=args.use_key)
+        install()
 
     output_dir = Path(args.path)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -80,5 +80,5 @@ def package_exe():
     return zip_path
 
 def build_and_package():
-    install(use_key=True)
+    install()
     return package_exe()
