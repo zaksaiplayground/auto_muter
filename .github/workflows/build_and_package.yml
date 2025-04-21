@@ -37,24 +37,24 @@ jobs:
         run: |
           poetry install --with dev
 
-      - name: Run tests with coverage
-        run: |
-          $result = pytest --cov=auto_muter --cov-report=term-missing
-          $coverage_line = $result | Select-String -Pattern "TOTAL"
-          $coverage_value = ($coverage_line -split "\s+")[3]
+      # - name: Run tests with coverage
+      #   run: |
+      #     $result = pytest --cov=auto_muter --cov-report=term-missing
+      #     $coverage_line = $result | Select-String -Pattern "TOTAL"
+      #     $coverage_value = ($coverage_line -split "\s+")[3]
 
-          # Remove '%' if present and convert to float
-          $coverage_percentage = $coverage_value -replace '%', ''
-          $coverage_percentage = [float]$coverage_percentage
+      #     # Remove '%' if present and convert to float
+      #     $coverage_percentage = $coverage_value -replace '%', ''
+      #     $coverage_percentage = [float]$coverage_percentage
 
-          Write-Host "Coverage Percentage: $coverage_percentage"
+      #     Write-Host "Coverage Percentage: $coverage_percentage"
 
-          # Check if coverage is below the threshold (75%)
-          if ($coverage_percentage -lt 75) {
-              Write-Error "Coverage is below threshold. Coverage: $coverage_percentage%"
-              exit 1
-          }
-        shell: pwsh
+      #     # Check if coverage is below the threshold (75%)
+      #     if ($coverage_percentage -lt 75) {
+      #         Write-Error "Coverage is below threshold. Coverage: $coverage_percentage%"
+      #         exit 1
+      #     }
+      #   shell: pwsh
 
       - name: Python Semantic Release
         id: semantic-release

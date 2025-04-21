@@ -2,9 +2,15 @@
 
 import ctypes
 import logging
+import math
+import time
 
+import comtypes
+import numpy as np
 from comtypes import CLSCTX_ALL
-from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+from pycaw.pycaw import (DEVICE_STATE, AudioUtilities, EDataFlow,
+                         IAudioEndpointVolume, IAudioMeterInformation,
+                         IMMDeviceEnumerator)
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +21,8 @@ class AudioController:
     def __init__(self):
         """Initialize the audio controller"""
         self.initialized = False
+        self.output_monitor_initialized = False
+
         try:
             # Get default audio device
             devices = AudioUtilities.GetSpeakers()
@@ -24,10 +32,67 @@ class AudioController:
             self.volume = ctypes.cast(
                 interface, ctypes.POINTER(IAudioEndpointVolume)
             )  # noqa: E501
+
+            # Initialize audio level meter for output detection
+            meter_interface = devices.Activate(
+                IAudioMeterInformation._iid_, CLSCTX_ALL, None
+            )
+            self.audio_meter = ctypes.cast(
+                meter_interface, ctypes.POINTER(IAudioMeterInformation)
+            )
+
             self.initialized = True
+            self.output_monitor_initialized = True
             logger.info("Audio controller initialized successfully")
+
         except Exception as e:  # pylint: disable=broad-exception-caught
             logger.error("Failed to initialize audio controller: %s", e)
+
+    def is_audio_playing(self):
+        """
+        Check if any audio is currently playing through the speakers
+
+        Returns:
+            bool: True if audio is playing, False otherwise
+        """
+        if not self.output_monitor_initialized:
+            return False
+
+        try:
+            # Get the peak value from the audio meter
+            peak_value = self.audio_meter.GetPeakValue()
+
+            # Check if the peak is above the threshold (adjust as needed)
+            # Using -60dB as threshold (very quiet sound)
+            threshold = 0.001  # Approximately -60dB
+
+            is_playing = peak_value > threshold
+
+            if is_playing:
+                peak_db = 20 * math.log10(peak_value) if peak_value > 0 else -100
+                logger.debug(f"Audio detected: Peak level = {peak_db:.1f}dB")
+
+            return is_playing
+
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Error checking if audio is playing: %s", e)
+            return False
+
+    def get_peak_meter_value(self):
+        """
+        Get the current peak meter value for output audio
+
+        Returns:
+            float: Peak audio level (0.0 to 1.0) or -1 if error
+        """
+        if not self.output_monitor_initialized:
+            return -1
+
+        try:
+            return self.audio_meter.GetPeakValue()
+        except Exception as e:
+            logger.error("Error getting peak meter value: %s", e)
+            return -1
 
     def get_mute_state(self):
         """

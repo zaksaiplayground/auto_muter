@@ -7,7 +7,7 @@ from tkinter import ttk
 logger = logging.getLogger(__name__)
 
 
-class AutoMuterGUI: # pylint: disable=too-many-instance-attributes, too-few-public-methods
+class AutoMuterGUI:  # pylint: disable=too-many-instance-attributes, too-few-public-methods
     """GUI for the Auto Muter application"""
 
     def __init__(self, audio_muter):
@@ -19,7 +19,7 @@ class AutoMuterGUI: # pylint: disable=too-many-instance-attributes, too-few-publ
         """Create the Tkinter GUI"""
         self.root = tk.Tk()
         self.root.title("Auto Muter")
-        self.root.geometry("500x450")
+        self.root.geometry("500x500")  # Increased height for new controls
         self.root.resizable(True, True)
 
         # Create a frame with padding
@@ -32,7 +32,9 @@ class AutoMuterGUI: # pylint: disable=too-many-instance-attributes, too-few-publ
         # Device selection
         ttk.Label(main_frame, text="Select Input Device:").pack(anchor="w")
         device_names = [f"{dev['name']}" for dev in self.audio_muter.devices]
-        self.device_var = tk.StringVar()    # pylint: disable=attribute-defined-outside-init
+        self.device_var = (
+            tk.StringVar()
+        )  # pylint: disable=attribute-defined-outside-init
         if device_names:
             self.device_var.set(device_names[0])
         device_combo = ttk.Combobox(
@@ -42,7 +44,9 @@ class AutoMuterGUI: # pylint: disable=too-many-instance-attributes, too-few-publ
 
         # Energy threshold
         ttk.Label(main_frame, text="Energy Threshold:").pack(anchor="w")
-        self.threshold_var = tk.IntVar(value=self.audio_muter.energy_threshold) # pylint: disable=attribute-defined-outside-init
+        self.threshold_var = tk.IntVar(
+            value=self.audio_muter.energy_threshold
+        )  # pylint: disable=attribute-defined-outside-init
         threshold_scale = ttk.Scale(
             main_frame, from_=100, to=2000, variable=self.threshold_var
         )
@@ -51,12 +55,38 @@ class AutoMuterGUI: # pylint: disable=too-many-instance-attributes, too-few-publ
 
         # Silence timeout
         ttk.Label(main_frame, text="Silence Timeout (seconds):").pack(anchor="w")
-        self.timeout_var = tk.DoubleVar(value=self.audio_muter.silence_timeout) # pylint: disable=attribute-defined-outside-init
+        self.timeout_var = tk.DoubleVar(
+            value=self.audio_muter.silence_timeout
+        )  # pylint: disable=attribute-defined-outside-init
         timeout_scale = ttk.Scale(
             main_frame, from_=0.5, to=10.0, variable=self.timeout_var
         )
         timeout_scale.pack(fill=tk.X, pady=5)
         ttk.Label(main_frame, textvariable=self.timeout_var).pack()
+
+        # Output monitoring checkbox
+        self.output_monitoring_var = tk.BooleanVar(
+            value=self.audio_muter.output_monitoring_enabled
+        )  # pylint: disable=attribute-defined-outside-init
+        output_monitoring_frame = ttk.Frame(main_frame)
+        output_monitoring_frame.pack(fill=tk.X, pady=5)
+
+        output_check = ttk.Checkbutton(
+            output_monitoring_frame,
+            text="Monitor audio output (keep unmuted during calls/playback)",
+            variable=self.output_monitoring_var,
+            command=self._toggle_output_monitoring,
+        )
+        output_check.pack(anchor="w", pady=5)
+
+        # Description text for output monitoring
+        description_text = (
+            "When enabled, speakers remain unmuted when any audio is playing\n"
+            "through your device (calls, videos, music, etc.)"
+        )
+        ttk.Label(
+            output_monitoring_frame, text=description_text, foreground="gray"
+        ).pack(anchor="w")
 
         # Buttons
         button_frame = ttk.Frame(main_frame)
@@ -78,7 +108,9 @@ class AutoMuterGUI: # pylint: disable=too-many-instance-attributes, too-few-publ
         self.exit_button.pack(side=tk.LEFT, padx=5)
 
         # Status labels
-        self.run_status_label = ttk.Label(main_frame, text="Status: Stopped")   # pylint: disable=attribute-defined-outside-init
+        self.run_status_label = ttk.Label(
+            main_frame, text="Status: Stopped"
+        )  # pylint: disable=attribute-defined-outside-init
         self.run_status_label.pack(pady=5)
         self.audio_muter.run_status_label = self.run_status_label
 
@@ -114,6 +146,12 @@ class AutoMuterGUI: # pylint: disable=too-many-instance-attributes, too-few-publ
         # Start the GUI main loop
         self.root.mainloop()
 
+    def _toggle_output_monitoring(self):
+        """Toggle output monitoring based on checkbox"""
+        enabled = self.output_monitoring_var.get()
+        self.audio_muter.set_output_monitoring(enabled)
+        logger.info(f"Output monitoring {'enabled' if enabled else 'disabled'}")
+
     def _start_from_gui(self):
         """Start with updated settings from GUI"""
         # Update settings
@@ -127,6 +165,7 @@ class AutoMuterGUI: # pylint: disable=too-many-instance-attributes, too-few-publ
 
         self.audio_muter.energy_threshold = self.threshold_var.get()
         self.audio_muter.silence_timeout = self.timeout_var.get()
+        self.audio_muter.set_output_monitoring(self.output_monitoring_var.get())
 
         # Start service
         self.audio_muter.start()

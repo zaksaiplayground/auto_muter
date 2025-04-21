@@ -26,6 +26,7 @@ class AudioMuter:
         self.energy_threshold = 1000  # Adjust for sensitivity
         self.silence_timeout = 1.0  # Seconds of silence before muting
         self.last_sound_time = time.time()
+        self.output_monitoring_enabled = True  # Default to enabled
 
         # Initialize audio controller
         self.audio_controller = AudioController()
@@ -101,25 +102,44 @@ class AudioMuter:
 
             logger.error("Started PyAudio stream on device: %s", self.input_device)
 
+            # Output monitoring interval
+            output_check_interval = 0.5  # Check output every half second
+            last_output_check_time = time.time()
+
             while self.running:
                 try:
                     # Read audio data
                     data = stream.read(chunk, exception_on_overflow=False)
 
-                    # Calculate energy
+                    # Calculate energy from microphone
                     fmt = f"{len(data)//2}h"
                     pcm_data = struct.unpack(fmt, data)
                     energy = np.sqrt(np.mean(np.array(pcm_data) ** 2))
 
-                    # If speaking is detected
-                    if energy > self.energy_threshold:
-                        self.last_sound_time = time.time()
+                    # Current time
+                    current_time = time.time()
+
+                    # Check if output monitoring is enabled and it's time to check again
+                    audio_playing = False
+                    if (
+                        self.output_monitoring_enabled
+                        and (current_time - last_output_check_time)
+                        > output_check_interval
+                    ):
+                        audio_playing = self.audio_controller.is_audio_playing()
+                        last_output_check_time = current_time
+                        if audio_playing:
+                            logger.debug("Audio output detected")
+
+                    # If either speaking is detected OR audio is playing
+                    if energy > self.energy_threshold or audio_playing:
+                        self.last_sound_time = current_time
                         if self.muted:
                             self.toggle_mute()
                     # If silence for longer than timeout
                     elif (
                         not self.muted
-                        and time.time() - self.last_sound_time > self.silence_timeout
+                        and current_time - self.last_sound_time > self.silence_timeout
                     ):
                         self.toggle_mute()
 
@@ -167,6 +187,16 @@ class AudioMuter:
             if hasattr(self, "status_label") and self.status_label:
                 mute_text = "Muted" if self.muted else "Unmuted"
                 self.status_label.config(text=f"Current State: {mute_text}")
+
+    def set_output_monitoring(self, enabled):
+        """
+        Enable or disable output audio monitoring
+
+        Args:
+            enabled (bool): True to enable, False to disable
+        """
+        self.output_monitoring_enabled = enabled
+        logger.info(f"Output monitoring {'enabled' if enabled else 'disabled'}")
 
     def set_mute_state(self, should_mute):
         """
