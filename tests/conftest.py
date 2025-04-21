@@ -1,15 +1,18 @@
+# conftest.py
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
+from auto_muter.audio_controller import AudioController
+from auto_muter.audio_muter import AudioMuter
 
 @pytest.fixture
 def mock_audio_controller():
-    controller = MagicMock()
-    controller.toggle_mute.return_value = False  # Simulate unmuted
-    return controller
+    with patch("auto_muter.audio_controller.AudioUtilities.GetSpeakers"), \
+         patch("auto_muter.audio_controller.IAudioEndpointVolume"), \
+         patch("auto_muter.audio_controller.ctypes"):
+        yield AudioController()
 
 @pytest.fixture
-def patched_audio_muter(mock_audio_controller):
+def audio_muter(mock_audio_controller):
     with patch("auto_muter.audio_muter.AudioController", return_value=mock_audio_controller), \
-         patch("auto_muter.audio_muter.get_audio_devices", return_value=[{"name": "Default", "id": "default"}]):
-        from auto_muter.audio_muter import AudioMuter
+         patch("auto_muter.audio_muter.get_audio_devices", return_value=[{"name": "Mic", "id": "1"}]):
         yield AudioMuter()

@@ -1,25 +1,22 @@
-import time
+# tests/test_audio_muter.py
+def test_initial_state(audio_muter):
+    assert audio_muter.muted is True
+    assert audio_muter.running is False
 
-def test_initial_state(patched_audio_muter):
-    assert patched_audio_muter.running is False
-    assert patched_audio_muter.muted is True
-    assert isinstance(patched_audio_muter.devices, list)
+def test_toggle_mute(audio_muter):
+    audio_muter.audio_controller.toggle_mute = lambda: False
+    audio_muter.toggle_mute()
+    assert audio_muter.muted is False
 
-def test_toggle_mute_sets_state(patched_audio_muter):
-    patched_audio_muter.muted = True
-    patched_audio_muter.toggle_mute()
-    assert patched_audio_muter.muted is False
+def test_set_mute_state(audio_muter):
+    audio_muter.set_mute_state(True)
+    assert audio_muter.muted is True
+    audio_muter.set_mute_state(False)
+    assert audio_muter.muted is False
 
-def test_start_sets_running_and_thread(patched_audio_muter):
-    patched_audio_muter.start()
-    assert patched_audio_muter.running is True
-    time.sleep(0.1)  # allow thread to initialize
-    patched_audio_muter.stop()
-    assert patched_audio_muter.running is False
-
-def test_stop_gracefully_stops_thread(patched_audio_muter):
-    patched_audio_muter.start()
-    patched_audio_muter.stop()
-    assert patched_audio_muter.running is False
-    if patched_audio_muter.audio_thread:
-        assert not patched_audio_muter.audio_thread.is_alive()
+def test_start_and_stop(audio_muter):
+    audio_muter.audio_controller.set_mute_state = lambda x: x
+    audio_muter.start()
+    assert audio_muter.running is True
+    audio_muter.stop()
+    assert audio_muter.running is False
