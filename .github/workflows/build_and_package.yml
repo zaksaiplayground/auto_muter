@@ -11,9 +11,10 @@ jobs:
     runs-on: windows-latest
     concurrency: release
     permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+      contents: write           # Required to push commits and tags
+      id-token: write           # Required for GitHub release creation
+      pull-requests: write      # Allow interaction with PRs
+      issues: write             # Allow interaction with issues
 
     steps:
       - name: Checkout repository
@@ -55,13 +56,10 @@ jobs:
           }
         shell: pwsh
 
-      - name: Python Semantic Release
-        id: semantic-release
-        run: |
-          semantic-release version
-          semantic-release publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run Python Semantic Release
+        uses: python-semantic-release/python-semantic-release@v9.8.8
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Commit and push version change
       #   run: |
