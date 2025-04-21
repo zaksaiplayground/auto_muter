@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## v0.2.9 (2025-04-21)
+
+### Bug Fixes
+
+- Fix semver
+  ([`b9f4433`](https://github.com/zaksaiplayground/auto_muter/commit/b9f44338d343009ccf7562894d395d6c35731b44))
+
+
 ## v0.2.8 (2025-04-21)
 
 
