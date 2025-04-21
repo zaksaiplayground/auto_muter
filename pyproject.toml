@@ -14,7 +14,6 @@ dependencies = [
     "pyaudio (>=0.2.14,<0.3.0)",
     "pyinstaller (>=6.13.0,<7.0.0)",
     "toml (>=0.10.2,<0.11.0)",
-    "python-semantic-release (>=9.21.0,<10.0.0)",
 ]
 
 [build-system]
@@ -25,6 +24,10 @@ build-backend = "poetry.core.masonry.api"
 build = "auto_muter.package:install"
 build_and_package = "auto_muter.package:build_and_package"
 auto-muter = "auto_muter.main:main"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+python-semantic-release = "^9.21.0"
 
 [tool.semantic_release]
 version_variable = "pyproject.toml:project.version"
