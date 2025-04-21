@@ -56,21 +56,15 @@ jobs:
           }
         shell: pwsh
 
-      - name: Run Python Semantic Release
-        uses: python-semantic-release/python-semantic-release@v9.8.8
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Commit and push version change
-      #   run: |
-      #     git config --global user.name "github-actions[bot]"
-      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      #     git pull --all
-      #     git add pyproject.toml
-      #     git commit -m "chore: update version to ${{ steps.semantic-release.outputs.version }}"
-      #     git push origin main
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Python Semantic Release
+        id: semantic-release
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --all
+          semantic-release publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Get current version

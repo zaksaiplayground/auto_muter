@@ -29,3 +29,15 @@ build-backend = "poetry.core.masonry.api"
 build = "auto_muter.package:install"
 build_and_package = "auto_muter.package:build_and_package"
 auto-muter = "auto_muter.main:main"
+
+[tool.semantic_release]
+version_toml = ["pyproject.toml:tool.poetry.version"]
+changelog_file = "CHANGELOG.md"
+version_source = "commit"
+branch = "master"
+upload_to_repository = false
+upload_to_pypi = false
+upload_to_release = false
+tag_format = "v{version}"
+commit_subject = "chore(release): {version} [skip ci]"
+commit_message = "Release"
