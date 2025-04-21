@@ -1,3 +1,6 @@
+"""GUI for the AutoMuter."""
+
+# TODO: add tests
 import logging
 import tkinter as tk
 from tkinter import ttk
@@ -69,15 +72,12 @@ class AutoMuterGUI:
         ttk.Button(
             button_frame, text="Test Mute", command=self.audio_muter.toggle_mute
         ).pack(side=tk.LEFT, padx=5)
+
+        # FIXME: keep speaker to start_up state before exit
         ttk.Button(
             button_frame,
             text="Exit",
-            command=lambda: [
-                self.audio_muter.toggle_mute(
-                    mute_state=self.audio_muter.mute_state_on_startup
-                ),
-                self.root.destroy(),
-            ],
+            command=self.root.destroy,
         ).pack(side=tk.LEFT, padx=5)
 
         # Status labels

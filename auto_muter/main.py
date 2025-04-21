@@ -1,7 +1,11 @@
-"""
-Auto Muter - Automatically mutes/unmutes microphone based on voice detection
-"""
+"""Startup script for AutoMuter"""
 
+# TODO: add tests
+# FIXME: the git version tag should reflect the pyproject.toml versions
+# TODO: add poetry/pip dependency security checks
+# TODO: find vulnerability in code - https://github.com/PyCQA/bandit, sonarqube
+# TODO: find a secure way to ensure no issues with exe and Windows defender
+# https://stackoverflow.com/questions/252226/signing-a-windows-exe-file
 import sys
 
 from auto_muter.audio_muter import AudioMuter

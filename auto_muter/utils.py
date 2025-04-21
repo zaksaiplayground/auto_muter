@@ -2,6 +2,7 @@ import logging
 
 import pyaudio
 
+# TODO: add tests
 logger = logging.getLogger(__name__)
 
 

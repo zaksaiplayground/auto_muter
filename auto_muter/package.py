@@ -1,3 +1,6 @@
+"""Utility script to build and package application."""
+
+# TODO: add tests
 import argparse
 import os
 import zipfile

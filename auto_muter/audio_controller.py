@@ -1,3 +1,6 @@
+"""Audio Controller using Windows Core Audio API."""
+
+# TODO: add tests
 import ctypes
 import logging
 
@@ -16,13 +19,18 @@ class AudioController:
         try:
             # Get default audio device
             devices = AudioUtilities.GetSpeakers()
-            interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-            self.volume = ctypes.cast(interface, ctypes.POINTER(IAudioEndpointVolume))
+            interface = devices.Activate(
+                IAudioEndpointVolume._iid_, CLSCTX_ALL, None
+            )  # noqa: E501
+            self.volume = ctypes.cast(
+                interface, ctypes.POINTER(IAudioEndpointVolume)
+            )  # noqa: E501
             self.initialized = True
             logger.info("Audio controller initialized successfully")
         except Exception as e:
-            logger.error(f"Failed to initialize audio controller: {e}", exc_info=True)
-            # Fallback to media key method
+            logger.error(
+                "Failed to initialize audio controller: " f"{e}", exc_info=True
+            )
             pass
 
     def toggle_mute(self):
@@ -30,7 +38,8 @@ class AudioController:
         Toggle mute state using audio controller
 
         Returns:
-            bool or None: New mute state, or None if state couldn't be determined
+            bool or None: New mute state, or None if state couldn't
+                          be determined
         """
         if self.initialized:
             try:
@@ -39,7 +48,7 @@ class AudioController:
                 return not current_mute  # Return new mute state
             except Exception as e:
                 logger.error(
-                    f"Error toggling mute with audio controller: {e}", exc_info=True
+                    "Error toggling mute with audio controller: " f"{e}", exc_info=True
                 )
 
         # Backup method: use media keys
@@ -50,5 +59,7 @@ class AudioController:
             # Can't determine actual state, so return None
             return None
         except Exception as e:
-            logger.error(f"Error toggling mute with media keys: {e}", exc_info=True)
+            logger.error(
+                f"Error toggling mute with media keys: {e}", exc_info=True
+            )  # noqa: E501
             return None

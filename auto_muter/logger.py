@@ -1,3 +1,6 @@
+"""Custom application logger."""
+
+# TODO: add tests
 import logging
 import os
 import sys

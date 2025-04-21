@@ -1,9 +1,11 @@
+"""Core auto-muting functionality handler."""
+
+# TODO: add tests
 import logging
 import struct
 import threading
 import time
 
-import keyboard
 import numpy as np
 import pyaudio
 
@@ -147,6 +149,8 @@ class AudioMuter:
         if self.running:
             return
 
+        # FIXME: always mute on startup
+
         self.running = True
         self.muted = True  # Assume we start muted
         self.last_sound_time = time.time()
@@ -174,5 +178,7 @@ class AudioMuter:
         # Update GUI if it exists
         if hasattr(self, "run_status_label") and self.run_status_label:
             self.run_status_label.config(text="Status: Stopped")
+
+        # FIXME: keep speaker to start_up state before stopping
 
         logger.info("Auto-Muter stopped!")
