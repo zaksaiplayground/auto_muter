@@ -34,8 +34,21 @@ jobs:
 
       - name: Install dependencies
         run: |
-          poetry install
-          pip install python-semantic-release
+          poetry install --with dev
+
+      - name: Run tests with coverage
+        run: |
+          poetry run pytest --cov=auto_muter --cov-report=xml  # Run tests and generate coverage report
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(pytest --cov=auto_muter --cov-report=term-missing | tee)  # Capture the output
+          COVERAGE_PERCENTAGE=$(echo "$COVERAGE" | grep -oP '\d+\.\d+(?=%)' | tail -n 1)  # Extract percentage
+          echo "Test coverage: $COVERAGE_PERCENTAGE%"
+          if (( $(echo "$COVERAGE_PERCENTAGE < 80" | bc -l) )); then  # Set your threshold (80% here)
+            echo "Coverage is below threshold! Failing the build.";
+            exit 1;  # Fail the build if coverage is below threshold
+          fi
 
       - name: Python Semantic Release
         id: semantic-release
