@@ -1,7 +1,44 @@
 # CHANGELOG
 
 
+## v0.2.0 (2025-04-21)
+
+### Chores
+
+- Identify to-do tasks
+  ([`2aaeb98`](https://github.com/zaksaiplayground/auto_muter/commit/2aaeb98a583a5e8a806a7ec8cedd32d49077102c))
+
+### Continuous Integration
+
+- Add and refactor dependencies
+  ([`4fda00f`](https://github.com/zaksaiplayground/auto_muter/commit/4fda00fa3a6afd2fb3eb9a7e9c5281f1cc6f0f26))
+
+- Fix pipeline
+  ([`dfc39e3`](https://github.com/zaksaiplayground/auto_muter/commit/dfc39e301498f4102491252596732bb5d65c8fd3))
+
+- Update dependencies and cicd pipeline
+  ([`e810708`](https://github.com/zaksaiplayground/auto_muter/commit/e8107083fbd166102f94f81ba4bf90fb0c5c3b8e))
+
+### Features
+
+- Implement user requests
+  ([`d866129`](https://github.com/zaksaiplayground/auto_muter/commit/d866129ca6ae6c24b0bbd4aae5c4426056bff80c))
+
+### Testing
+
+- Add unit tests
+  ([`97cacdd`](https://github.com/zaksaiplayground/auto_muter/commit/97cacdd2d4cdca5f5742cce76fba98db9c242dc7))
+
+- Add unit tests
+  ([`e16e28b`](https://github.com/zaksaiplayground/auto_muter/commit/e16e28bbd1da83126431df5e62041619e63ce2dc))
+
+
 ## v0.1.5 (2025-04-20)
+
+### Chores
+
+- Add pre-commit and cleanup code
+  ([`85ba5c2`](https://github.com/zaksaiplayground/auto_muter/commit/85ba5c2300e02fd2e3596bf73c9564964cb90852))
 
 
 ## v0.1.4 (2025-04-20)
