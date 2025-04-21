@@ -71,7 +71,7 @@ jobs:
         id: get_version
         run: |
           git pull --all
-          $version = poetry version -s
+          $version = $(git tag -l --sort=version:refname | tail -n 1)
           echo "VERSION=$version" >> $env:GITHUB_ENV
           echo "Current version: $version"
 
