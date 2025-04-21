@@ -1,18 +1,14 @@
-# tests/test_package.py
-import zipfile
-from pathlib import Path
-from unittest.mock import patch, mock_open, MagicMock
-import builtins
-import os
+"""Unit test for the packaging module."""
 
-import pytest
+from unittest.mock import MagicMock, mock_open, patch
+
+from auto_muter.package import get_version, install, package_exe
 
 
 @patch("auto_muter.package.logger")
 @patch("auto_muter.package.PyInstaller.__main__.run", autospec=True)
 def test_install_runs_pyinstaller(mock_run, mock_logger):
-    from auto_muter.package import install
-
+    """Test package installation."""
     install()
     mock_run.assert_called_once()
     mock_logger.info.assert_called_once_with("Build completed successfully!")
@@ -20,8 +16,8 @@ def test_install_runs_pyinstaller(mock_run, mock_logger):
 
 @patch("auto_muter.package.toml.load")
 def test_get_version_returns_version(mock_toml):
+    """test get_version from poetry."""
     mock_toml.return_value = {"project": {"version": "1.2.3"}}
-    from auto_muter.package import get_version
 
     assert get_version() == "1.2.3"
 
@@ -33,15 +29,16 @@ def test_get_version_returns_version(mock_toml):
 @patch("auto_muter.package.zipfile.ZipFile")
 @patch("auto_muter.package.setup_logger")
 @patch("auto_muter.package.argparse.ArgumentParser")
-def test_package_exe_creates_zip(
+def test_package_exe_creates_zip(  # pylint: disable=too-many-arguments
     mock_argparse,
-    mock_logger,
+    mock_logger,  # pylint: disable=unused-argument
     mock_zipfile,
-    mock_exists,
-    mock_mkdir,
-    mock_get_version,
+    mock_exists,  # pylint: disable=unused-argument
+    mock_mkdir,  # pylint: disable=unused-argument
+    mock_get_version,  # pylint: disable=unused-argument
     mock_install,
 ):
+    """Test creation of zip package."""
     mock_args = MagicMock()
     mock_args.path = "."
     mock_args.build = True
@@ -53,7 +50,6 @@ def test_package_exe_creates_zip(
 
     # Patch os.environ so GITHUB_OUTPUT doesn't exist
     with patch.dict("os.environ", {}, clear=True):
-        from auto_muter.package import package_exe
 
         package_exe()
 
@@ -67,8 +63,13 @@ def test_package_exe_creates_zip(
 @patch("auto_muter.package.setup_logger")
 @patch("auto_muter.package.argparse.ArgumentParser")
 def test_package_exe_sets_github_output(
-    mock_argparse, mock_logger, mock_zipfile, mock_exists, mock_version
+    mock_argparse,
+    mock_logger,  # pylint: disable=unused-argument
+    mock_zipfile,
+    mock_exists,  # pylint: disable=unused-argument
+    mock_version,  # pylint: disable=unused-argument
 ):
+    """Test github output file writing."""
     mock_args = MagicMock()
     mock_args.path = "."
     mock_args.build = False
@@ -82,10 +83,11 @@ def test_package_exe_sets_github_output(
     mock_zipfile.return_value.__enter__.return_value = mock_zipfile_instance
 
     fake_output_file = "/fake/github_output.txt"
-    with patch.dict("os.environ", {"GITHUB_OUTPUT": fake_output_file}), \
-         patch("builtins.open", mock_open()) as m:
+    with (
+        patch.dict("os.environ", {"GITHUB_OUTPUT": fake_output_file}),
+        patch("builtins.open", mock_open()) as m,
+    ):
 
-        from auto_muter.package import package_exe
         package_exe()
 
         handle = m()

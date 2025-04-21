@@ -1,8 +1,9 @@
+"""Utility module for application."""
+
 import logging
 
 import pyaudio
 
-# TODO: add tests
 logger = logging.getLogger(__name__)
 
 
@@ -18,8 +19,8 @@ def get_audio_devices():
                 name = device_info["name"]
                 devices.append({"name": name, "id": str(i)})
         p.terminate()
-    except Exception as e:
-        logger.error(f"Error getting devices with PyAudio: {e}", exc_info=True)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logger.error("Error getting devices with PyAudio: %s", e)
 
     # Always add default device
     if not any(d["id"] == "default" for d in devices):

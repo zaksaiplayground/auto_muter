@@ -1,11 +1,7 @@
 """Startup script for AutoMuter"""
 
-# TODO: add tests
-# FIXME: the git version tag should reflect the pyproject.toml versions
 # TODO: add poetry/pip dependency security checks
 # TODO: find vulnerability in code - https://github.com/PyCQA/bandit, sonarqube
-# TODO: find a secure way to ensure no issues with exe and Windows defender
-# https://stackoverflow.com/questions/252226/signing-a-windows-exe-file
 import sys
 
 from auto_muter.audio_muter import AudioMuter
@@ -14,6 +10,7 @@ from auto_muter.logger import setup_logger
 
 
 def main():
+    """Main entrypoint for the application."""
     # Setup logging
     logger = setup_logger()
     logger.info("Starting Auto Muter")
@@ -26,8 +23,8 @@ def main():
         gui = AutoMuterGUI(audio_muter)
         gui.create_gui()
 
-    except Exception as e:
-        logger.error(f"Error in main application: {e}", exc_info=True)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logger.error("Error in main application: %s", e)
         return 1
 
     return 0

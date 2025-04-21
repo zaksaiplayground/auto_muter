@@ -20,6 +20,8 @@ dependencies = [
 pytest = "^8.3.5"
 python-semantic-release = "^9.21.0"
 pytest-cov = "^6.1.1"
+pre-commit = "^4.2.0"
+pylint = "^3.3.6"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -38,7 +40,7 @@ branch = "master"
 upload_to_repository = false
 upload_to_pypi = false
 upload_to_vcs_release = false
-github_release = false  # Explicitly disable GitHub releases
-build_command = ""  # Empty build command
+github_release = false
+build_command = ""
 commit_subject = "chore(release): {version} [skip ci]"
 commit_message = "Release"

@@ -1,6 +1,5 @@
 """Audio Controller using Windows Core Audio API."""
 
-# TODO: add tests
 import ctypes
 import logging
 
@@ -27,11 +26,8 @@ class AudioController:
             )  # noqa: E501
             self.initialized = True
             logger.info("Audio controller initialized successfully")
-        except Exception as e:
-            logger.error(
-                "Failed to initialize audio controller: " f"{e}", exc_info=True
-            )
-            pass
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Failed to initialize audio controller: %s", e)
 
     def get_mute_state(self):
         """
@@ -44,8 +40,8 @@ class AudioController:
         if self.initialized:
             try:
                 return bool(self.volume.GetMute())
-            except Exception as e:
-                logger.error(f"Error getting mute state: {e}", exc_info=True)
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                logger.error("Error setting mute state: %s", e)
         return None  # Return None if we can't determine the state
 
     def set_mute_state(self, should_mute):
@@ -62,8 +58,8 @@ class AudioController:
             try:
                 self.volume.SetMute(bool(should_mute), None)
                 return should_mute  # Return new mute state
-            except Exception as e:
-                logger.error(f"Error setting mute state: {e}", exc_info=True)
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                logger.error("Error setting mute state: %s", e)
 
         # Backup method: use media keys (can only toggle, not set specific state)
         try:
@@ -76,16 +72,14 @@ class AudioController:
                 ctypes.windll.user32.keybd_event(0xAD, 0, 0, 0)
                 ctypes.windll.user32.keybd_event(0xAD, 0, 2, 0)
                 return should_mute
-            elif current_state is not None:
+            if current_state is not None:
                 # Already in desired state
                 return current_state
 
             # Can't determine actual state
             return None
-        except Exception as e:
-            logger.error(
-                f"Error setting mute with media keys: {e}", exc_info=True
-            )  # noqa: E501
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Error setting mute with media keys: %s", e)
             return None
 
     def toggle_mute(self):
@@ -101,10 +95,8 @@ class AudioController:
                 current_mute = self.volume.GetMute()
                 self.volume.SetMute(not current_mute, None)
                 return not current_mute  # Return new mute state
-            except Exception as e:
-                logger.error(
-                    "Error toggling mute with audio controller: " f"{e}", exc_info=True
-                )
+            except Exception as e:  # pylint: disable=broad-exception-caught
+                logger.error("Error toggling mute with audio controller: %s", e)
 
         # Backup method: use media keys
         try:
@@ -113,8 +105,6 @@ class AudioController:
             ctypes.windll.user32.keybd_event(0xAD, 0, 2, 0)
             # Can't determine actual state, so return None
             return None
-        except Exception as e:
-            logger.error(
-                f"Error toggling mute with media keys: {e}", exc_info=True
-            )  # noqa: E501
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Error toggling mute with media keys: %s", e)
             return None

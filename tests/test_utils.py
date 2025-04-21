@@ -1,11 +1,13 @@
-# tests/test_utils.py
-import pytest
-from unittest.mock import patch, MagicMock
+"""Unit test for the utils module."""
+
+from unittest.mock import MagicMock, patch
+
 from auto_muter.utils import get_audio_devices
 
 
 @patch("auto_muter.utils.pyaudio.PyAudio")
 def test_get_audio_devices_with_inputs(mock_pyaudio):
+    """Test retrieval of audio devices."""
     mock_instance = MagicMock()
     mock_pyaudio.return_value = mock_instance
 
@@ -23,7 +25,8 @@ def test_get_audio_devices_with_inputs(mock_pyaudio):
 
 
 @patch("auto_muter.utils.pyaudio.PyAudio", side_effect=Exception("pyaudio boom"))
-def test_get_audio_devices_error(mock_pyaudio):
+def test_get_audio_devices_error(mock_pyaudio):  # pylint: disable=unused-argument
+    """Test audio device retrieval when default present."""
     devices = get_audio_devices()
 
     # Should still include default even if PyAudio fails

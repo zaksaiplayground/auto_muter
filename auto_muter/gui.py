@@ -1,6 +1,5 @@
 """GUI for the AutoMuter."""
 
-# TODO: add tests
 import logging
 import tkinter as tk
 from tkinter import ttk
@@ -8,7 +7,7 @@ from tkinter import ttk
 logger = logging.getLogger(__name__)
 
 
-class AutoMuterGUI:
+class AutoMuterGUI: # pylint: disable=too-many-instance-attributes, too-few-public-methods
     """GUI for the Auto Muter application"""
 
     def __init__(self, audio_muter):
@@ -33,7 +32,7 @@ class AutoMuterGUI:
         # Device selection
         ttk.Label(main_frame, text="Select Input Device:").pack(anchor="w")
         device_names = [f"{dev['name']}" for dev in self.audio_muter.devices]
-        self.device_var = tk.StringVar()
+        self.device_var = tk.StringVar()    # pylint: disable=attribute-defined-outside-init
         if device_names:
             self.device_var.set(device_names[0])
         device_combo = ttk.Combobox(
@@ -43,7 +42,7 @@ class AutoMuterGUI:
 
         # Energy threshold
         ttk.Label(main_frame, text="Energy Threshold:").pack(anchor="w")
-        self.threshold_var = tk.IntVar(value=self.audio_muter.energy_threshold)
+        self.threshold_var = tk.IntVar(value=self.audio_muter.energy_threshold) # pylint: disable=attribute-defined-outside-init
         threshold_scale = ttk.Scale(
             main_frame, from_=100, to=2000, variable=self.threshold_var
         )
@@ -52,7 +51,7 @@ class AutoMuterGUI:
 
         # Silence timeout
         ttk.Label(main_frame, text="Silence Timeout (seconds):").pack(anchor="w")
-        self.timeout_var = tk.DoubleVar(value=self.audio_muter.silence_timeout)
+        self.timeout_var = tk.DoubleVar(value=self.audio_muter.silence_timeout) # pylint: disable=attribute-defined-outside-init
         timeout_scale = ttk.Scale(
             main_frame, from_=0.5, to=10.0, variable=self.timeout_var
         )
@@ -73,21 +72,20 @@ class AutoMuterGUI:
             button_frame, text="Test Mute", command=self.audio_muter.toggle_mute
         ).pack(side=tk.LEFT, padx=5)
 
-        # FIXME: keep speaker to start_up state before exit
-        self.exit_button = ttk.Button(
+        self.exit_button = ttk.Button(  # pylint: disable=attribute-defined-outside-init
             button_frame, text="Exit", command=self._exit_application
         )
         self.exit_button.pack(side=tk.LEFT, padx=5)
 
         # Status labels
-        self.run_status_label = ttk.Label(main_frame, text="Status: Stopped")
+        self.run_status_label = ttk.Label(main_frame, text="Status: Stopped")   # pylint: disable=attribute-defined-outside-init
         self.run_status_label.pack(pady=5)
         self.audio_muter.run_status_label = self.run_status_label
 
         initial_mute_state = (
             "Muted" if self.audio_muter.initial_mute_state else "Unmuted"
         )
-        self.status_label = ttk.Label(
+        self.status_label = ttk.Label(  # pylint: disable=attribute-defined-outside-init
             main_frame, text=f"Current State: {initial_mute_state}"
         )
         self.status_label.pack(pady=5)

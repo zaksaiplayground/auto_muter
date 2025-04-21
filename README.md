@@ -46,7 +46,9 @@ The GUI allows you to configure:
 
 ## Troubleshooting
 
-Check the log file in the `C:\Users\<user_name>\AppData\Local\AutoMuter\logs` directory for detailed information if you encounter any issues.
+* Major issue: Windows blocking the app. # TODO
+* Check the log file in the `C:\Users\<user_name>\AppData\Local\AutoMuter\logs` directory for detailed information if you encounter any issues.
+
 
 Common issues:
 
@@ -57,3 +59,16 @@ Common issues:
 
 - Thanks to the PyAudio team for the audio processing library
 - Thanks to the pycaw team for Windows Core Audio API integration
+
+## Tests
+
+```
+poetry install --with dev
+pytest tests
+```
+
+## Motivation
+
+## Process
+
+## Packaging

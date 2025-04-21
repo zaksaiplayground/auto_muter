@@ -1,6 +1,5 @@
 """Core auto-muting functionality handler."""
 
-# TODO: add tests
 import logging
 import struct
 import threading
@@ -34,8 +33,8 @@ class AudioMuter:
         # Get list of input devices for Windows
         try:
             self.devices = get_audio_devices()
-        except Exception as e:
-            logger.error(f"Error getting audio devices: {e}", exc_info=True)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Error getting audio devices: %s", e)
             self.devices = [{"name": "Default", "id": "default"}]
 
         self.input_device = "default"
@@ -50,8 +49,9 @@ class AudioMuter:
         try:
             if self.audio_controller.initialized:
                 self.initial_mute_state = self.audio_controller.get_mute_state()
-                logger.info(
-                    f"Initial mute state captured: {'Muted' if self.initial_mute_state else 'Unmuted'}"
+                logger.error(
+                    "Initial mute state captured: %s",
+                    "Muted" if self.initial_mute_state else "Unmuted",
                 )
             else:
                 logger.warning(
@@ -60,26 +60,26 @@ class AudioMuter:
                 self.initial_mute_state = (
                     False  # Default assumption if we can't determine
                 )
-        except Exception as e:
-            logger.error(f"Error capturing initial mute state: {e}", exc_info=True)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Error capturing initial mute state: %s", e)
             self.initial_mute_state = False  # Default assumption if we can't determine
 
     def _record_and_process_audio(self):
         """Record audio and process it for voice detection"""
         try:
             self._record_with_pyaudio()
-        except Exception as e:
-            logger.error(f"Error in audio processing: {e}", exc_info=True)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Error in audio processing: %s", e)
             self.running = False
             self._update_gui_status(f"Error: {str(e)}")
 
     def _record_with_pyaudio(self):
         """Record and process audio using PyAudio"""
 
-        CHUNK = self.chunk_size
-        FORMAT = pyaudio.paInt16
-        CHANNELS = 1
-        RATE = 16000
+        chunk = self.chunk_size
+        format = pyaudio.paInt16
+        channels = 1
+        rate = 16000
 
         try:
             p = pyaudio.PyAudio()
@@ -91,20 +91,20 @@ class AudioMuter:
 
             # Open the stream
             stream = p.open(
-                format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
+                format=format,
+                channels=channels,
+                rate=rate,
                 input=True,
-                frames_per_buffer=CHUNK,
+                frames_per_buffer=chunk,
                 input_device_index=device_index,
             )
 
-            logger.info(f"Started PyAudio stream on device: {self.input_device}")
+            logger.error("Started PyAudio stream on device: %s", self.input_device)
 
             while self.running:
                 try:
                     # Read audio data
-                    data = stream.read(CHUNK, exception_on_overflow=False)
+                    data = stream.read(chunk, exception_on_overflow=False)
 
                     # Calculate energy
                     fmt = f"{len(data)//2}h"
@@ -125,7 +125,7 @@ class AudioMuter:
 
                 except IOError as e:
                     # Handle overflow errors
-                    logger.debug(f"PyAudio read error (overflow): {e}")
+                    logger.error("PyAudio read error (overflow): %s", e)
 
                 # Small sleep to prevent CPU hogging
                 time.sleep(0.01)
@@ -136,8 +136,8 @@ class AudioMuter:
             p.terminate()
             logger.info("PyAudio stream closed")
 
-        except Exception as e:
-            logger.error(f"Error in PyAudio processing: {e}", exc_info=True)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            logger.error("Error in PyAudio processing: %s", e)
             self.running = False
             self._update_gui_status(f"Error: {str(e)}")
 
@@ -161,7 +161,7 @@ class AudioMuter:
 
             # Print status update
             status = "Muted" if self.muted else "Unmuted"
-            logger.info(f"Auto: {status}")
+            logger.error("Auto: %s", status)
 
             # Update GUI if it exists
             if hasattr(self, "status_label") and self.status_label:
@@ -183,7 +183,7 @@ class AudioMuter:
             self.muted = should_mute
 
         status = "Muted" if self.muted else "Unmuted"
-        logger.info(f"Manually set: {status}")
+        logger.error("Manually set: %s", status)
 
         # Update GUI if it exists
         if hasattr(self, "status_label") and self.status_label:
@@ -222,8 +222,9 @@ class AudioMuter:
 
         # Restore to initial mute state when stopping
         if self.initial_mute_state is not None:
-            logger.info(
-                f"Restoring to initial mute state: {'Muted' if self.initial_mute_state else 'Unmuted'}"
+            logger.error(
+                "Restoring to initial mute state: %s",
+                "Muted" if self.initial_mute_state else "Unmuted",
             )
             self.set_mute_state(self.initial_mute_state)
 
@@ -240,7 +241,8 @@ class AudioMuter:
             self.stop()
         elif self.initial_mute_state is not None:
             # If already stopped but need to restore mute state
-            logger.info(
-                f"Restoring to initial mute state before exit: {'Muted' if self.initial_mute_state else 'Unmuted'}"
+            logger.error(
+                "Restoring to initial mute state before exit: %s",
+                "Muted" if self.initial_mute_state else "Unmuted",
             )
             self.set_mute_state(self.initial_mute_state)

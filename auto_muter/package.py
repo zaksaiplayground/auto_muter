@@ -1,6 +1,5 @@
 """Utility script to build and package application."""
 
-# TODO: add tests
 import argparse
 import os
 import zipfile
@@ -12,14 +11,15 @@ import toml
 from auto_muter.logger import setup_logger
 
 HERE = Path(__file__).parent.parent.absolute()
-path_to_main = str(HERE / "auto_muter" / "main.py")
+PATH_TO_MAIN = str(HERE / "auto_muter" / "main.py")
 
 logger = setup_logger()
 
 
 def install():
+    """Build python package using pyinstaller."""
     cmd = [
-        path_to_main,
+        PATH_TO_MAIN,
         "--noconfirm",
         "--clean",
         "--onefile",
@@ -69,11 +69,11 @@ def package_exe():
     if exe_path.exists():
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
             zipf.write(exe_path, arcname="AutoMuter.exe")
-        logger.info(f"Packaged: {zip_path}")
+        logger.error("Packaged: %s", zip_path)
 
         output_file = os.environ.get("GITHUB_OUTPUT")
         if output_file:
-            with open(output_file, "a") as f:
+            with open(output_file, "a", encoding="utf-8") as f:
                 f.write(f"package_path={zip_path}\n")
                 f.write(f"version={version}\n")
         else:
@@ -81,5 +81,6 @@ def package_exe():
 
 
 def build_and_package():
+    """Single function to build and package."""
     install()
     package_exe()
