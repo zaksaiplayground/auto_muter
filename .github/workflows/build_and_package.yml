@@ -3,7 +3,7 @@ name: Build and Release AutoMuter
 on:
   push:
     branches:
-      - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -63,17 +63,15 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git pull --all
           export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          semantic-release version
-        shell: bash # Explicitly use bash
+          output=$(semantic-release version)
+          echo "$output"
 
+          # Extract the new version number
+          new_version=$(echo "$output" | grep -oP "New version: \K[0-9]+\.[0-9]+\.[0-9]+")
 
-      # - name: Get current version
-      #   id: get_version
-      #   run: |
-      #     git pull --all
-      #     $version = $(git tag -l --sort=version:refname | tail -n 1)
-      #     echo "VERSION=$version" >> $env:GITHUB_ENV
-      #     echo "Current version: $version"
+          # Set output variables for later steps
+          echo "new_release_version=$new_version" >> $GITHUB_OUTPUT
+        shell: bash
 
       - name: Build + Package
         run: poetry run build_and_package

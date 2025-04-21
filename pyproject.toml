@@ -31,7 +31,7 @@ build_and_package = "auto_muter.package:build_and_package"
 auto-muter = "auto_muter.main:main"
 
 [tool.semantic_release]
-version_toml = ["pyproject.toml:tool.poetry.version"]
+version_toml = ["pyproject.toml:project.version"]
 changelog_file = "CHANGELOG.md"
 version_source = "commit"
 branch = "master"
