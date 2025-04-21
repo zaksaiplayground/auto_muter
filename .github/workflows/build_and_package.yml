@@ -63,20 +63,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit and push version change
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add pyproject.toml
-          git commit -m "chore: update version to ${{ steps.semantic-release.outputs.version }}"
-          git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Commit and push version change
+      #   run: |
+      #     git config --global user.name "github-actions[bot]"
+      #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      #     git pull --all
+      #     git add pyproject.toml
+      #     git commit -m "chore: update version to ${{ steps.semantic-release.outputs.version }}"
+      #     git push origin main
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
       - name: Get current version
         id: get_version
         run: |
+          git pull --all
           $version = poetry version -s
           echo "VERSION=$version" >> $env:GITHUB_ENV
           echo "Current version: $version"
