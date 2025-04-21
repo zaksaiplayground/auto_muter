@@ -62,9 +62,9 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git pull --all
-          semantic-release version --github-token "${{ secrets.GITHUB_TOKEN }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          semantic-release version
+        shell: bash # Explicitly use bash
 
 
       # - name: Get current version
