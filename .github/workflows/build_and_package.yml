@@ -67,13 +67,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
-      - name: Get current version
-        id: get_version
-        run: |
-          git pull --all
-          $version = $(git tag -l --sort=version:refname | tail -n 1)
-          echo "VERSION=$version" >> $env:GITHUB_ENV
-          echo "Current version: $version"
+      # - name: Get current version
+      #   id: get_version
+      #   run: |
+      #     git pull --all
+      #     $version = $(git tag -l --sort=version:refname | tail -n 1)
+      #     echo "VERSION=$version" >> $env:GITHUB_ENV
+      #     echo "Current version: $version"
 
       - name: Build + Package
         run: poetry run build_and_package
@@ -82,5 +82,5 @@ jobs:
       - name: Upload artifact to release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ env.VERSION }}
-          files: AutoMuter-v${{ env.VERSION }}.zip
+          tag_name: v${{ steps.semantic-release.outputs.new_release_version }}
+          files: AutoMuter-v${{ steps.semantic-release.outputs.new_release_version }}.zip
