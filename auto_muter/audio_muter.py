@@ -22,8 +22,10 @@ class AudioMuter:
         """Initialize the AudioMuter"""
         self.running = False
         self.muted = True
-        self.energy_threshold = 500  # Adjust for sensitivity
-        self.silence_timeout = 2.0  # Seconds of silence before muting
+        # Track the initial mute state for restoring when stopped
+        # self.initial_mute_state = None
+        self.energy_threshold = 1000  # Adjust for sensitivity
+        self.silence_timeout = 1.0  # Seconds of silence before muting
         self.last_sound_time = time.time()
 
         # Initialize audio controller
@@ -39,6 +41,28 @@ class AudioMuter:
         self.input_device = "default"
         self.chunk_size = 1024
         self.audio_thread = None
+
+        # Get the initial mute state when the application starts
+        self._capture_initial_mute_state()
+
+    def _capture_initial_mute_state(self):
+        """Capture the initial mute state of the system"""
+        try:
+            if self.audio_controller.initialized:
+                self.initial_mute_state = self.audio_controller.get_mute_state()
+                logger.info(
+                    f"Initial mute state captured: {'Muted' if self.initial_mute_state else 'Unmuted'}"
+                )
+            else:
+                logger.warning(
+                    "Could not capture initial mute state: audio controller not initialized"
+                )
+                self.initial_mute_state = (
+                    False  # Default assumption if we can't determine
+                )
+        except Exception as e:
+            logger.error(f"Error capturing initial mute state: {e}", exc_info=True)
+            self.initial_mute_state = False  # Default assumption if we can't determine
 
     def _record_and_process_audio(self):
         """Record audio and process it for voice detection"""
@@ -144,15 +168,36 @@ class AudioMuter:
                 mute_text = "Muted" if self.muted else "Unmuted"
                 self.status_label.config(text=f"Current State: {mute_text}")
 
+    def set_mute_state(self, should_mute):
+        """
+        Set the mute state to a specific value
+
+        Args:
+            should_mute (bool): True to mute, False to unmute
+        """
+        new_state = self.audio_controller.set_mute_state(should_mute)
+
+        if new_state is not None:
+            self.muted = new_state
+        else:
+            self.muted = should_mute
+
+        status = "Muted" if self.muted else "Unmuted"
+        logger.info(f"Manually set: {status}")
+
+        # Update GUI if it exists
+        if hasattr(self, "status_label") and self.status_label:
+            mute_text = "Muted" if self.muted else "Unmuted"
+            self.status_label.config(text=f"Current State: {mute_text}")
+
     def start(self):
         """Start monitoring and auto-muting"""
         if self.running:
             return
 
-        # FIXME: always mute on startup
-
+        # Always mute on startup regardless of current state
+        self.set_mute_state(True)  # Force mute
         self.running = True
-        self.muted = True  # Assume we start muted
         self.last_sound_time = time.time()
 
         # Start audio monitoring in a separate thread
@@ -167,7 +212,7 @@ class AudioMuter:
         logger.info("Auto-Muter started!")
 
     def stop(self):
-        """Stop monitoring"""
+        """Stop monitoring and restore initial mute state"""
         if not self.running:
             return
 
@@ -175,10 +220,27 @@ class AudioMuter:
         if self.audio_thread and self.audio_thread.is_alive():
             self.audio_thread.join(timeout=1.0)
 
+        # Restore to initial mute state when stopping
+        if self.initial_mute_state is not None:
+            logger.info(
+                f"Restoring to initial mute state: {'Muted' if self.initial_mute_state else 'Unmuted'}"
+            )
+            self.set_mute_state(self.initial_mute_state)
+
         # Update GUI if it exists
         if hasattr(self, "run_status_label") and self.run_status_label:
             self.run_status_label.config(text="Status: Stopped")
 
-        # FIXME: keep speaker to start_up state before stopping
-
         logger.info("Auto-Muter stopped!")
+
+    def cleanup_before_exit(self):
+        """Restore initial mute state before exiting the application"""
+        # Stop monitoring if still running
+        if self.running:
+            self.stop()
+        elif self.initial_mute_state is not None:
+            # If already stopped but need to restore mute state
+            logger.info(
+                f"Restoring to initial mute state before exit: {'Muted' if self.initial_mute_state else 'Unmuted'}"
+            )
+            self.set_mute_state(self.initial_mute_state)

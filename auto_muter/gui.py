@@ -74,18 +74,22 @@ class AutoMuterGUI:
         ).pack(side=tk.LEFT, padx=5)
 
         # FIXME: keep speaker to start_up state before exit
-        ttk.Button(
-            button_frame,
-            text="Exit",
-            command=self.root.destroy,
-        ).pack(side=tk.LEFT, padx=5)
+        self.exit_button = ttk.Button(
+            button_frame, text="Exit", command=self._exit_application
+        )
+        self.exit_button.pack(side=tk.LEFT, padx=5)
 
         # Status labels
         self.run_status_label = ttk.Label(main_frame, text="Status: Stopped")
         self.run_status_label.pack(pady=5)
         self.audio_muter.run_status_label = self.run_status_label
 
-        self.status_label = ttk.Label(main_frame, text="Current State: Muted")
+        initial_mute_state = (
+            "Muted" if self.audio_muter.initial_mute_state else "Unmuted"
+        )
+        self.status_label = ttk.Label(
+            main_frame, text=f"Current State: {initial_mute_state}"
+        )
         self.status_label.pack(pady=5)
         self.audio_muter.status_label = self.status_label
 
@@ -128,3 +132,17 @@ class AutoMuterGUI:
 
         # Start service
         self.audio_muter.start()
+
+    def _exit_application(self):
+        """Clean up and exit application"""
+        # Make sure to restore initial mute state before exit
+        self.audio_muter.cleanup_before_exit()
+
+        # Then destroy the window
+        if self.root:
+            self.root.destroy()
+
+    def _stop_from_gui(self):
+        """Stop the auto-muter"""
+        # Existing stop code will work since we've updated the AudioMuter class
+        self.audio_muter.stop()

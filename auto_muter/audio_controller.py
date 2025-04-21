@@ -33,6 +33,61 @@ class AudioController:
             )
             pass
 
+    def get_mute_state(self):
+        """
+        Get the current mute state of the system
+
+        Returns:
+            bool or None: Current mute state (True=muted, False=unmuted),
+                          or None if state couldn't be determined
+        """
+        if self.initialized:
+            try:
+                return bool(self.volume.GetMute())
+            except Exception as e:
+                logger.error(f"Error getting mute state: {e}", exc_info=True)
+        return None  # Return None if we can't determine the state
+
+    def set_mute_state(self, should_mute):
+        """
+        Set the mute state to a specific value
+
+        Args:
+            should_mute (bool): True to mute, False to unmute
+
+        Returns:
+            bool or None: New mute state, or None if state couldn't be determined
+        """
+        if self.initialized:
+            try:
+                self.volume.SetMute(bool(should_mute), None)
+                return should_mute  # Return new mute state
+            except Exception as e:
+                logger.error(f"Error setting mute state: {e}", exc_info=True)
+
+        # Backup method: use media keys (can only toggle, not set specific state)
+        try:
+            # Get current state first
+            current_state = self.get_mute_state()
+
+            # Only press mute key if needed
+            if current_state is not None and current_state != should_mute:
+                # VK_VOLUME_MUTE = 0xAD
+                ctypes.windll.user32.keybd_event(0xAD, 0, 0, 0)
+                ctypes.windll.user32.keybd_event(0xAD, 0, 2, 0)
+                return should_mute
+            elif current_state is not None:
+                # Already in desired state
+                return current_state
+
+            # Can't determine actual state
+            return None
+        except Exception as e:
+            logger.error(
+                f"Error setting mute with media keys: {e}", exc_info=True
+            )  # noqa: E501
+            return None
+
     def toggle_mute(self):
         """
         Toggle mute state using audio controller
