@@ -75,6 +75,14 @@ jobs:
           echo "new_release_version=$new_version" >> $GITHUB_OUTPUT
         shell: bash
 
+      - name: Get current version
+        id: get_version
+        run: |
+          git pull --all
+          $version = poetry version -s
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+          echo "Current version: $version"
+
       - name: Build + Package
         run: poetry run build_and_package
         working-directory: ${{ github.workspace }}  # default, just explicit
@@ -82,5 +90,5 @@ jobs:
       - name: Upload artifact to release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ steps.semantic-release.outputs.new_release_version }}
-          files: AutoMuter-v${{ steps.semantic-release.outputs.new_release_version }}.zip
+          tag_name: v${{ env.VERSION }}
+          files: AutoMuter-v${{ env.VERSION }}.zip
