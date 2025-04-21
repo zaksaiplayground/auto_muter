@@ -1,9 +1,20 @@
 # CHANGELOG
 
 
+## v0.2.10 (2025-04-21)
+
+### Bug Fixes
+
+- New version monitoring audio output
+  ([`20a2cc2`](https://github.com/zaksaiplayground/auto_muter/commit/20a2cc29728a214f3c7d4124c3a97cb3b75b339b))
+
+
 ## v0.2.9 (2025-04-21)
 
 ### Bug Fixes
+
+- Fix pre-commit issues
+  ([`e633f3e`](https://github.com/zaksaiplayground/auto_muter/commit/e633f3e26519ef22cac22c88bd1e83cfd8cf0e01))
 
 - Fix semver
   ([`b9f4433`](https://github.com/zaksaiplayground/auto_muter/commit/b9f44338d343009ccf7562894d395d6c35731b44))
